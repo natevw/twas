@@ -141,6 +141,16 @@ function count_lines( str ) {
   return n;
 }
 
+
+// workaround for https://issues.apache.org/jira/browse/COUCHDB-577
+// see also: https://github.com/andrewplummer/Sugar/issues/27
+function _exec(re, s) {
+    return RegExp.prototype.exec.call(re, s);
+}
+function _test(re, s) {
+    return RegExp.prototype.test.call(re, s);
+}
+
 // Internal - split source into rough blocks
 Markdown.prototype.split_blocks = function splitBlocks( input, startLine ) {
   // [\s\S] matches _anything_ (newline or space)
@@ -150,13 +160,13 @@ Markdown.prototype.split_blocks = function splitBlocks( input, startLine ) {
 
   var line_no = 1;
 
-  if ( ( m = /^(\s*\n)/.exec(input) ) != null ) {
+  if ( ( m = _exec(/^(\s*\n)/, input) ) != null ) {
     // skip (but count) leading blank lines
     line_no += count_lines( m[0] );
     re.lastIndex = m[0].length;
   }
 
-  while ( ( m = re.exec(input) ) != null ) {
+  while ( ( m = _exec(re, input) ) != null ) {
     blocks.push( mk_block( m[1], m[2], line_no ) );
     line_no += count_lines( m[0] );
   }
@@ -263,7 +273,7 @@ Markdown.prototype.loop_re_over_block = function( re, block, cb ) {
   var m,
       b = block.valueOf();
 
-  while ( b.length && (m = re.exec(b) ) != null) {
+  while ( b.length && (m = _exec(re, b) ) != null) {
     b = b.substr( m[0].length );
     cb.call(this, m);
   }
@@ -461,7 +471,7 @@ Markdown.dialects.Gruber = {
             ret = [];
 
         while ( blocks.length > 0 ) {
-          if ( re.exec( blocks[0] ) ) {
+          if ( _exec(re, blocks[0] ) ) {
             var b = blocks.shift(),
                 // Now remove that indent
                 x = b.replace( replace, "");
@@ -498,7 +508,7 @@ Markdown.dialects.Gruber = {
         if ( !m ) return undefined;
 
         function make_list( m ) {
-          var list = bullet_list.exec( m[2] )
+          var list = _exec(bullet_list, m[2] )
                    ? ["bulletlist"]
                    : ["numberlist"];
 
@@ -746,7 +756,7 @@ Markdown.dialects.Gruber.inline = {
           out.push(x);
       }
 
-      while ( ( m = re.exec(text) ) != null) {
+      while ( ( m = _exec(re, text) ) != null) {
         if ( m[1] ) add( m[1] ); // Some un-interesting text matched
         else        m[1] = { length: 0 }; // Or there was none, but make m[1].length == 0
 
@@ -1097,7 +1107,7 @@ Markdown.dialects.Maruku.block.definition_list = function definition_list( block
   if ( ( m = block.match( tight ) ) ) {
     // pull subsequent tight DL blocks out of `next`
     var blocks = [ block ];
-    while ( next.length && tight.exec( next[ 0 ] ) ) {
+    while ( next.length && _exec(tight, next[ 0 ] ) ) {
       blocks.push( next.shift() );
     }
 
@@ -1184,11 +1194,11 @@ function process_meta_hash( meta_string ) {
 
   for ( var i = 0; i < meta.length; ++i ) {
     // id: #foo
-    if ( /^#/.test( meta[ i ] ) ) {
+    if ( _test(/^#/, meta[ i ] ) ) {
       attr.id = meta[ i ].substring( 1 );
     }
     // class: .foo
-    else if ( /^\./.test( meta[ i ] ) ) {
+    else if ( _test(/^\./, meta[ i ] ) ) {
       // if class already exists, append the new one
       if ( attr['class'] ) {
         attr['class'] = attr['class'] + meta[ i ].replace( /./, " " );
@@ -1198,7 +1208,7 @@ function process_meta_hash( meta_string ) {
       }
     }
     // attribute: foo=bar
-    else if ( /=/.test( meta[ i ] ) ) {
+    else if ( _test(/=/, meta[ i ] ) ) {
       var s = meta[ i ].split( /=/ );
       attr[ s[ 0 ] ] = s[ 1 ];
     }
