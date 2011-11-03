@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Edit note: {{ summary }}</title>
+    
+    <style>
+        textarea { font-family: monospace; position: absolute; top: 3em; bottom: 0; left: 0; right: 0; }
+    </style>
+</head>
+<body>
+    <form action="{{app_url}}/_update/source/{{id}}" method="POST">
+        <a href="{{app_url}}/_list/summary/by_moddate">←</a> <a href="{{app_url}}/_show/rendered/{{id}}">Cancel</a> <button>Save</button>
+        <textarea name="content" autofocus>{{ content }}</textarea>
+    <form>
+</body>
+</html>
