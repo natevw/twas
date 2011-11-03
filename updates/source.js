@@ -10,7 +10,7 @@ function (doc, req) {
     }
     
     doc.last_modified = new Date().toISOString();
-    doc.content = req.form.content;
+    doc.content = req.form.content.replace(/\r/g, '');
     
     var appURL = '/' + req.info.db_name + '/' + ddoc._id,
         noteURL = appURL + '/_show/rendered/' + doc._id;
