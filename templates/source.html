@@ -10,7 +10,10 @@
 </head>
 <body>
     <form action="{{app_url}}/_update/source/{{id}}" method="POST">
-        <a href="{{app_url}}/_list/summary/by_moddate">←</a> <a href="{{app_url}}/_show/rendered/{{id}}">Cancel</a> <button>Save</button>
+        <a href="{{app_url}}/_list/summary/by_moddate">←</a>
+        <a href="{{app_url}}/_show/rendered/{{id}}">Cancel</a>
+        <a href="{{app_url}}/_show/files/{{id}}">Files...</a>
+        <button>Save</button>
         <textarea name="content" autofocus>{{ content }}</textarea>
     <form>
 </body>
