@@ -4,7 +4,7 @@ function (doc, req) {
     provides("html", function () {
         var db_url = '/' + req.info.db_name,
             app_url = fs.to_html("{{{db_url}}}/{{{id}}}", {db_url:db_url, id:ddoc._id});
-        var template = "<li><a href='{{db_url}}/{{id}}/{{name}}'>{{ name }}</a></li>",
+        var template = "<li><a href='{{db_url}}/{{id}}/{{name}}'>./{{ name }}</a></li>",
             files = (doc && doc._attachments) ? Object.keys(doc._attachments).map(function (name) {
                 return fs.to_html(template, {db_url:db_url, id:doc._id, name:name});
             }).join('') : "<li class='empty'>No files.</li>";
